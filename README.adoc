@@ -14,6 +14,49 @@
  $ curl http://localhost:8080/messages/get/winter
  $ curl http://localhost:8080/messages/kings
 
+== HealthCheck
+
+ $ curl http://localhost:8080/health
+
+[source, json, indent=1]
+----
+{
+  "status": "UP",
+  "diskSpace": {
+    "status": "UP",
+    "total": 499582496768,
+    "free": 257829298176,
+    "threshold": 10485760
+  },
+  "redis": {
+    "status": "UP",
+    "version": "3.2.9"
+  }
+}
+----
+
+=== Let's shutdown the redis-server
+
+ $ docker-compose stop
+ $ curl http://localhost:8080/health
+
+[source, json, indent=1]
+----
+{
+  "status": "DOWN",
+  "diskSpace": {
+    "status": "UP",
+    "total": 499582496768,
+    "free": 257825476608,
+    "threshold": 10485760
+  },
+  "redis": {
+    "status": "DOWN",
+    "error": "org.springframework.data.redis.RedisConnectionFailureException: Cannot get Jedis connection; nested exception is redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool"
+  }
+}
+----
+
 == References
 
 * https://spring.io/guides/gs/messaging-redis
