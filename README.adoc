@@ -2,18 +2,8 @@
 
 == Redis Server
 
-.docker-compose.yml
-[source, yaml]
-----
-version: "3"
-
-services:
-  redis:
-    image: redis:3.2.9-alpine
-    container_name: redis-server
-    ports:
-      - "6379:6379"
-----
+ $ docker-compose config
+ $ docker-compose up -d
 
 == Launch and test
 
