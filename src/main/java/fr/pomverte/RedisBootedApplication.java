@@ -11,7 +11,13 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -57,6 +63,7 @@ public class RedisBootedApplication {
 	@Bean
 	public CommandLineRunner commandLineRunner (StringRedisTemplate template, CountDownLatch latch) {
 		return args -> {
+			// send a message to the redis-server on startup
 			template.convertAndSend("chat", "Hello from Redis!");
 			latch.await();
 		};
@@ -79,4 +86,27 @@ class Receiver {
 		log.info("Received '{}'", message);
 		this.latch.countDown();
 	}
+}
+
+@Slf4j
+@RestController
+@AllArgsConstructor
+@RequestMapping("/messages")
+class MessageController {
+
+	private StringRedisTemplate template;
+	private CountDownLatch latch;
+
+	/** send a message to the redis-server */
+	@PostMapping("/")
+    public ResponseEntity<String> create(@RequestParam("message") String message) {
+		this.template.convertAndSend("chat", message);
+		try {
+			this.latch.await();
+		} catch (InterruptedException e) {
+			log.error(e.getMessage(), e);
+			return new ResponseEntity<>("oups :'(", HttpStatus.I_AM_A_TEAPOT);
+		}
+        return new ResponseEntity<>("all good ;)", HttpStatus.OK);
+    }
 }
