@@ -8,12 +8,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -65,6 +68,7 @@ public class RedisBootedApplication {
 		return args -> {
 			// send a message to the redis-server on startup
 			template.convertAndSend("chat", "Hello from Redis!");
+			template.opsForValue().set("winter", "For the Night is dark and full of terror");
 			latch.await();
 		};
 	}
@@ -97,9 +101,9 @@ class MessageController {
 	private StringRedisTemplate template;
 	private CountDownLatch latch;
 
-	/** send a message to the redis-server */
+	/** send a message to a channel on redis-server */
 	@PostMapping("/")
-    public ResponseEntity<String> create(@RequestParam("message") String message) {
+    public ResponseEntity<String> sendToChannel(@RequestParam("message") String message) {
 		this.template.convertAndSend("chat", message);
 		try {
 			this.latch.await();
@@ -109,4 +113,11 @@ class MessageController {
 		}
         return new ResponseEntity<>("all good ;)", HttpStatus.OK);
     }
+
+	/** retreive message from redis-server */
+	@GetMapping("/get/{key}")
+	public ResponseEntity<String> getValueForKey(@PathVariable("key") String key) {
+		return new ResponseEntity<>(this.template.opsForValue().get(key), HttpStatus.OK);
+	}
+
 }
