@@ -1,0 +1,7 @@
+= Redis testing
+
+== References
+
+* https://spring.io/guides/gs/messaging-redis
+* http://projects.spring.io/spring-data-redis
+* https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples
