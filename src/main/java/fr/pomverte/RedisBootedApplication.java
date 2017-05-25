@@ -1,6 +1,7 @@
 package fr.pomverte;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -75,6 +76,10 @@ public class RedisBootedApplication {
 			template.opsForList().leftPush(kingsKey, "Robert Baratheon");
 			template.opsForList().leftPush(kingsKey, "Aegon Targaryen");
 			template.opsForList().leftPush(kingsKey, "Joffrey Baratheon");
+
+			// shadow will be evicted after 5 sec
+			template.opsForValue().set("shadow", "I am no one");
+			template.expire("shadow", 5, TimeUnit.SECONDS);
 
 			latch.await();
 		};
