@@ -20,6 +20,9 @@ services:
  $ mvn spring-boot:run
  $ curl -X POST --data "message=For The Watch !" http://localhost:8080/messages/
  $ curl http://localhost:8080/messages/get/winter
+ $ curl -X PUT http://localhost:8080/messages/get/winter/IsComing
+ $ curl http://localhost:8080/messages/get/winter
+ $ curl http://localhost:8080/messages/kings
 
 == References
 

@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
@@ -18,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -68,7 +68,14 @@ public class RedisBootedApplication {
 		return args -> {
 			// send a message to the redis-server on startup
 			template.convertAndSend("chat", "Hello from Redis!");
+
 			template.opsForValue().set("winter", "For the Night is dark and full of terror");
+
+			final String kingsKey = "kings";
+			template.opsForList().leftPush(kingsKey, "Robert Baratheon");
+			template.opsForList().leftPush(kingsKey, "Aegon Targaryen");
+			template.opsForList().leftPush(kingsKey, "Joffrey Baratheon");
+
 			latch.await();
 		};
 	}
@@ -120,4 +127,15 @@ class MessageController {
 		return new ResponseEntity<>(this.template.opsForValue().get(key), HttpStatus.OK);
 	}
 
+	/** update/create message from redis-server */
+	@PutMapping("/get/{key}/{value}")
+	public ResponseEntity<String> putValueForKey(@PathVariable("key") String key, @PathVariable("value") String value) {
+		this.template.opsForValue().set(key, value);
+		return new ResponseEntity<>("updated", HttpStatus.OK);
+	}
+
+	@GetMapping("/kings")
+	public ResponseEntity<String> getKings() {
+		return new ResponseEntity<>(this.template.opsForList().leftPop("kings"), HttpStatus.OK);
+	}
 }
