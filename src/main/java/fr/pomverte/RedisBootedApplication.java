@@ -34,8 +34,8 @@ public class RedisBootedApplication {
 			MessageListenerAdapter listenerAdapter) {
 		RedisMessageListenerContainer container = new RedisMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
-        // the msg listener adapter is listening at the chat topic
-        // tip : a regexp could be passed
+		// the msg listener adapter is listening at the chat topic
+		// tip : a regexp could be passed
 		container.addMessageListener(listenerAdapter, new PatternTopic("chat"));
 
 		return container;
@@ -64,7 +64,7 @@ public class RedisBootedApplication {
 	}
 
 	@Bean
-	public CommandLineRunner commandLineRunner (StringRedisTemplate template, CountDownLatch latch) {
+	public CommandLineRunner commandLineRunner(StringRedisTemplate template, CountDownLatch latch) {
 		return args -> {
 			// send a message to the redis-server on startup
 			template.convertAndSend("chat", "Hello from Redis!");
@@ -110,7 +110,7 @@ class MessageController {
 
 	/** send a message to a channel on redis-server */
 	@PostMapping("/")
-    public ResponseEntity<String> sendToChannel(@RequestParam("message") String message) {
+	public ResponseEntity<String> sendToChannel(@RequestParam("message") String message) {
 		this.template.convertAndSend("chat", message);
 		try {
 			this.latch.await();
@@ -118,8 +118,8 @@ class MessageController {
 			log.error(e.getMessage(), e);
 			return new ResponseEntity<>("oups :'(", HttpStatus.I_AM_A_TEAPOT);
 		}
-        return new ResponseEntity<>("all good ;)", HttpStatus.OK);
-    }
+		return new ResponseEntity<>("all good ;)", HttpStatus.OK);
+	}
 
 	/** retreive message from redis-server */
 	@GetMapping("/get/{key}")
