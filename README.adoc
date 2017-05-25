@@ -1,5 +1,25 @@
 = Redis testing
 
+== Redis Server
+
+.docker-compose.yml
+[source, yaml]
+----
+version: "3"
+
+services:
+  redis:
+    image: redis:3.2.9-alpine
+    container_name: redis-server
+    ports:
+      - "6379:6379"
+----
+
+== Launch and test
+
+ $ mvn spring-boot:run
+ $ curl -X POST --data "message=For The Watch !" http://localhost:8080/messages/
+
 == References
 
 * https://spring.io/guides/gs/messaging-redis
