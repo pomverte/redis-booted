@@ -25,7 +25,8 @@ TIP: first time will be slow, next time will be cached
 
  $ curl -X DELETE http://localhost:8080/api/users
 
-TIP: entries are evicted from "users" cache
+TIP: Entries are evicted from "users" cache.
+If you wait more than the configured Time To Live, the entry will no longer be in the cache
 
 == HealthCheck
 
