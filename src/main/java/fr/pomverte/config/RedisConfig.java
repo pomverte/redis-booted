@@ -43,11 +43,6 @@ public class RedisConfig {
     }
 
     @Bean
-    public Receiver receiver(CountDownLatch latch) {
-        return new Receiver(latch);
-    }
-
-    @Bean
     public CountDownLatch latch() {
         return new CountDownLatch(1);
     }
