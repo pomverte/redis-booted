@@ -1,8 +1,8 @@
 package fr.pomverte.facade;
 
+import fr.pomverte.service.CacheService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,13 +15,13 @@ import java.util.concurrent.CountDownLatch;
 @RequestMapping("/messages")
 public class MessageController {
 
-    private StringRedisTemplate stringRedisTemplate;
+    private final CacheService cacheService;
     private CountDownLatch latch;
 
     /** send a message to a channel on redis-server */
     @PostMapping("/")
     public ResponseEntity<String> sendToChannel(@RequestParam("message") String message) {
-        this.stringRedisTemplate.convertAndSend("chat", message);
+        this.cacheService.push("chat", message);
         try {
             this.latch.await();
         } catch (InterruptedException e) {
@@ -34,18 +34,18 @@ public class MessageController {
     /** retreive message from redis-server */
     @GetMapping("/get/{key}")
     public ResponseEntity<String> getValueForKey(@PathVariable("key") String key) {
-        return ResponseEntity.ok(this.stringRedisTemplate.opsForValue().get(key));
+        return ResponseEntity.ok(this.cacheService.get(key));
     }
 
     /** update/create message from redis-server */
     @PutMapping("/get/{key}/{value}")
     public ResponseEntity<String> putValueForKey(@PathVariable("key") String key, @PathVariable("value") String value) {
-        this.stringRedisTemplate.opsForValue().set(key, value);
+        this.cacheService.add(key, value);
         return ResponseEntity.ok("updated");
     }
 
     @GetMapping("/kings")
     public ResponseEntity<String> getKings() {
-        return ResponseEntity.ok(this.stringRedisTemplate.opsForList().leftPop("kings"));
+        return ResponseEntity.ok(this.cacheService.read("kings"));
     }
 }
