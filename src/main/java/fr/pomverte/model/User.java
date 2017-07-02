@@ -1,4 +1,4 @@
-package fr.pomverte;
+package fr.pomverte.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

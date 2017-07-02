@@ -1,4 +1,4 @@
-package fr.pomverte;
+package fr.pomverte.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;

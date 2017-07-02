@@ -1,5 +1,6 @@
-package fr.pomverte;
+package fr.pomverte.facade;
 
+import fr.pomverte.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
