@@ -8,11 +8,24 @@
 == Launch and test
 
  $ mvn spring-boot:run
+
+=== Talking trought Jedis
+
  $ curl -X POST --data "message=For The Watch !" http://localhost:8080/messages/
  $ curl http://localhost:8080/messages/get/winter
  $ curl -X PUT http://localhost:8080/messages/get/winter/IsComing
  $ curl http://localhost:8080/messages/get/winter
  $ curl http://localhost:8080/messages/kings
+
+=== Caching stuff
+
+ $ curl http://localhost:8080/api/users/stark
+
+TIP: first time will be slow, next time will be cached
+
+ $ curl -X DELETE http://localhost:8080/api/users
+
+TIP: entries are evicted from "users" cache
 
 == HealthCheck
 
