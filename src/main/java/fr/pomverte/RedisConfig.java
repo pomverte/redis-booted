@@ -56,6 +56,12 @@ public class RedisConfig {
         return new StringRedisTemplate(connectionFactory);
     }
 
+    /**
+     * @param redisConnectionFactory
+     * @return
+     * @throws UnknownHostException
+     * @see org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration.RedisConfiguration#redisTemplate
+     */
     @Bean
     public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory)
             throws UnknownHostException {
