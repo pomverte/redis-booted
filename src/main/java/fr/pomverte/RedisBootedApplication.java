@@ -1,8 +1,7 @@
 package fr.pomverte;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,16 +14,10 @@ import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication
 public class RedisBootedApplication {
@@ -123,24 +116,24 @@ class MessageController {
 			log.error(e.getMessage(), e);
 			return new ResponseEntity<>("oups :'(", HttpStatus.I_AM_A_TEAPOT);
 		}
-		return new ResponseEntity<>("all good ;)", HttpStatus.OK);
+		return ResponseEntity.ok("all good ;)");
 	}
 
 	/** retreive message from redis-server */
 	@GetMapping("/get/{key}")
 	public ResponseEntity<String> getValueForKey(@PathVariable("key") String key) {
-		return new ResponseEntity<>(this.template.opsForValue().get(key), HttpStatus.OK);
+		return ResponseEntity.ok(this.template.opsForValue().get(key));
 	}
 
 	/** update/create message from redis-server */
 	@PutMapping("/get/{key}/{value}")
 	public ResponseEntity<String> putValueForKey(@PathVariable("key") String key, @PathVariable("value") String value) {
 		this.template.opsForValue().set(key, value);
-		return new ResponseEntity<>("updated", HttpStatus.OK);
+		return ResponseEntity.ok("updated");
 	}
 
 	@GetMapping("/kings")
 	public ResponseEntity<String> getKings() {
-		return new ResponseEntity<>(this.template.opsForList().leftPop("kings"), HttpStatus.OK);
+		return ResponseEntity.ok(this.template.opsForList().leftPop("kings"));
 	}
 }
